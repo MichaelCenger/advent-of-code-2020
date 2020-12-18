@@ -9,6 +9,10 @@ namespace _19_1
 		static void Main(string[] args)
 		{
 			List<string> input = ReadInput();
+			for(int i = 0; i < input.Count; i++)
+			{
+
+			}
 		}
 
 		private static List<string> ReadInput()
