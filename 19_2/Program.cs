@@ -14,12 +14,16 @@ namespace _19_2
 		static HashSet<int> alreadyParsedRules = new HashSet<int>();
 		static Dictionary<int, Rule> rules = new Dictionary<int, Rule>();
 		static int maxLength;
+		static int stopEight = 0;
+		static int stopEleven = 0;
+		static List<string> input;
+
+		static int inputSeperator = 133;
 		static void Main(string[] args)
 		{
-			List<string> input = ReadInput();
-			int aIndex = 1;
-			int bIndex = 14;
-			int inputSeperator = 31;
+			input = ReadInput();
+			int aIndex = 26;
+			int bIndex = 16;
 
 			for (int i = 0; i < inputSeperator; i++)
 			{
@@ -42,9 +46,6 @@ namespace _19_2
 			alreadyParsedRules.Add(aIndex);
 			alreadyParsedRules.Add(bIndex);
 
-
-			int it1 = 0;
-			int it2 = 0;
 			while (alreadyParsedRules.Count != inputSeperator)
 			{
 				foreach (var rule in rules)
@@ -85,24 +86,29 @@ namespace _19_2
 					{
 						ruleStrings.Add(rule.Value.ruleString);
 					}
-					foreach (var r in GetStringFromRule(ruleStrings))
+					if (rule.Key == 8)
+					{
+						stopEight++;
+					}
+					else if (rule.Key == 11)
+					{
+						stopEleven++;
+					}
+					foreach (var r in GetStringFromRule(ruleStrings, rule.Key))
 					{
 						rule.Value.rules.Add(r);
 					}
-					//if (rule.Key != 8 && rule.Key != 11)
-					//{
-					alreadyParsedRules.Add(rule.Key);
-					//}
-					//else
-					//{
-					//	foreach(var s in rule.Value.rules)
-					//	{
-					//		if(s.Length >= maxLength)
-					//		{
-					//			alreadyParsedRules.Add(rule.Key);
-					//		}
-					//	}
-					//}
+					if (rule.Key != 8 && rule.Key != 11)
+					{
+						alreadyParsedRules.Add(rule.Key);
+					}
+					else
+					{
+						if (stopEight > 10 && rule.Key == 8 || stopEleven > 10 && rule.Key == 11)
+						{
+							alreadyParsedRules.Add(rule.Key);
+						}
+					}
 				}
 			}
 
@@ -124,7 +130,7 @@ namespace _19_2
 			Console.WriteLine(matchingCount);
 		}
 
-		private static List<string> GetStringFromRule(List<string> stringRules)
+		private static List<string> GetStringFromRule(List<string> stringRules, int ruleIndex)
 		{
 			List<string> result = new List<string>();
 			foreach (string ruleString in stringRules)
@@ -137,18 +143,14 @@ namespace _19_2
 				{
 					indices.Add(Convert.ToInt32(s));
 				}
-				GetPermutations("", 0, targetDepth, indices, 0, permutations);
+				GetPermutations("", 0, targetDepth, indices, 0, permutations, ruleIndex);
 				result.AddRange(permutations);
 			}
 			return result;
 		}
 
-		public static void GetPermutations(string currentString, int currentDepth, int targetDepth, List<int> indices, int currentIndex, List<string> result)
+		public static void GetPermutations(string currentString, int currentDepth, int targetDepth, List<int> indices, int currentIndex, List<string> result, int ruleIndex)
 		{
-			if (currentString.Length > maxLength)
-			{
-				return;
-			}
 			if (currentDepth > targetDepth)
 			{
 				result.Add(currentString);
@@ -158,7 +160,23 @@ namespace _19_2
 			{
 				string s = currentString;
 				s += possibility;
-				GetPermutations(s, currentDepth + 1, targetDepth, indices, currentIndex + 1, result);
+				if (s.Length > maxLength)
+				{
+					return;
+				}
+				bool contains = false;
+				for (int i = inputSeperator; i < input.Count; i++)
+				{
+					if (input[i].Contains(s))
+					{
+						contains = true;
+						break;
+					}
+				}
+				if (contains)
+				{
+					GetPermutations(s, currentDepth + 1, targetDepth, indices, currentIndex + 1, result, ruleIndex);
+				}
 			}
 		}
 
