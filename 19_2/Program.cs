@@ -50,7 +50,6 @@ namespace _19_2
 			{
 				foreach (var rule in rules)
 				{
-
 					if (alreadyParsedRules.Contains(rule.Key))
 					{
 						continue;
@@ -104,7 +103,7 @@ namespace _19_2
 					}
 					else
 					{
-						if (stopEight > 10 && rule.Key == 8 || stopEleven > 10 && rule.Key == 11)
+						if (stopEight > 6 && rule.Key == 8 || stopEleven > 6 && rule.Key == 11)
 						{
 							alreadyParsedRules.Add(rule.Key);
 						}
@@ -155,6 +154,28 @@ namespace _19_2
 			{
 				result.Add(currentString);
 				return;
+			}
+
+			if ((ruleIndex == 8 || ruleIndex == 11) && rules[indices[currentIndex]].rules.Count == 0)
+			{
+				string s = currentString;
+				if (s.Length > maxLength)
+				{
+					return;
+				}
+				bool contains = false;
+				for (int i = inputSeperator; i < input.Count; i++)
+				{
+					if (input[i].Contains(s))
+					{
+						contains = true;
+						break;
+					}
+				}
+				if (contains)
+				{
+					GetPermutations(s, currentDepth + 1, targetDepth, indices, currentIndex + 1, result, ruleIndex);
+				}
 			}
 			foreach (string possibility in rules[indices[currentIndex]].rules)
 			{
